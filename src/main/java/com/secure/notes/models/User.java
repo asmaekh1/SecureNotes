@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username"), // ctd la valeur est unique
+                @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
 public class User{
@@ -29,7 +29,7 @@ public class User{
     @Column(name = "user_id")
     private Long userId;
 
-    @NotBlank // Valide que cet attribut ne soit ni null ni vide.
+    @NotBlank
     @Size(max = 20)
     @Column(name = "username")
     private String userName;
@@ -42,7 +42,7 @@ public class User{
 
     @Size(max = 120)
     @Column(name = "password")
-    @JsonIgnore //  Empêche l’inclusion du mot de passe lors de la sérialisation JSON (pour des raisons de sécurité).
+    @JsonIgnore
     private String password;
 
     private boolean accountNonLocked = true;
@@ -58,19 +58,10 @@ public class User{
     private String signUpMethod;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
-    //@ManyToOne Chaque utilisateur est associé à un seul rôle
-    // fetch = FetchType.EAGER : Charge immédiatement le rôle lors du chargement de l’utilisateur.
-    // cascde merge : modifiez un objet Role associé à un User et que vous sauvegardez (merge) l'utilisateur,
-    // la modification du rôle sera également automatiquement synchronisée dans la base de données.
-
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    //role_id : est le nom de la colonne qui va etre creer dans la table users
-
-    //referencedColumnName : (le nom de la colonne dans laquelle en pointe)
     @JsonBackReference
     @ToString.Exclude
     private Role role;
-
 
     @CreationTimestamp
     @Column(updatable = false)
