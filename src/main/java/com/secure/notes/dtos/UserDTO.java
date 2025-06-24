@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
+// Transférer des données utilisateur entre les couches (contrôleur, service, etc.) sans exposer l’entité principale (User).
+//Sécuriser l’application en ne transmettant que les champs nécessaires (par exemple, sans mot de passe).
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
