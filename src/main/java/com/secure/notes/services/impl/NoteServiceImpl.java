@@ -1,7 +1,8 @@
-package com.secure.notes.services;
+package com.secure.notes.services.impl;
 
 import com.secure.notes.models.Note;
-import com.secure.notes.repository.NoteRepository;
+import com.secure.notes.repositories.NoteRepository;
+import com.secure.notes.services.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +24,25 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public Note updateNoteForUser(Long noteId, String username, String content) {
-        Note note= noteRepository.findById(noteId).orElseThrow(()-> new RuntimeException("Not found"));
+    public Note updateNoteForUser(Long noteId, String content, String username) {
+        Note note = noteRepository.findById(noteId).orElseThrow(()
+                -> new RuntimeException("Note not found"));
         note.setContent(content);
         Note updatedNote = noteRepository.save(note);
-        return note;
+        return updatedNote;
     }
 
     @Override
-    public void deleteNoteForUser(long noteId, String username) {
+    public void deleteNoteForUser(Long noteId, String username) {
         noteRepository.deleteById(noteId);
     }
 
     @Override
     public List<Note> getNotesForUser(String username) {
-        List<Note> notes = noteRepository.findByOwnerUsername(username);
-        return notes;
+        List<Note> personalNotes = noteRepository
+                .findByOwnerUsername(username);
+        return personalNotes;
     }
 }
+
+

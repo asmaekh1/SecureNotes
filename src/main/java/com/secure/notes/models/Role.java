@@ -1,6 +1,5 @@
 package com.secure.notes.models;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,18 +16,19 @@ import java.util.Set;
 @Data
 @Table(name = "roles")
 public class Role{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
     private Integer roleId;
 
-    @ToString.Exclude // utilisée pour éviter les problèmes liés à la méthode toString() lorsque des relations bidirectionnelles existent entre les entités.
-    @Enumerated(EnumType.STRING) // Indique que cet attribut est un type énuméré
+    @ToString.Exclude
+    @Enumerated(EnumType.STRING)
     @Column(length = 20, name = "role_name")
     private AppRole roleName;
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JsonBackReference // eviter la redondance et les boucles infinie dans la serialization Json
+    @JsonBackReference
     @ToString.Exclude
     private Set<User> users = new HashSet<>();
 
