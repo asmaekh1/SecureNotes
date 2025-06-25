@@ -5,6 +5,9 @@ import com.secure.notes.models.Role;
 import com.secure.notes.models.User;
 import com.secure.notes.repositories.RoleRepository;
 import com.secure.notes.repositories.UserRepository;
+import com.secure.notes.security.jwt.AuthEntryPointJwt;
+import com.secure.notes.security.jwt.AuthTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +33,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
         securedEnabled = true,
         jsr250Enabled = true)
 public class SecurityConfig {
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -40,13 +49,20 @@ public class SecurityConfig {
         http.csrf(csrf ->
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers("/api/auth/public/**")
+                // This configuration is useful for endpoints that do not require CSRF protection, such as public authentication or registration endpoints, where the client is not yet authenticated.
         );
         //http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests((requests)
                 -> requests
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/csrf-token").permitAll()
+                .requestMatchers("/api/auth/public/**").permitAll()
                 .anyRequest().authenticated());
+        http.exceptionHandling(exceptionHandling ->
+                exceptionHandling.authenticationEntryPoint(unauthorizedHandler));
+        http.addFilterBefore(
+                authenticationJwtTokenFilter()
+                , UsernamePasswordAuthenticationFilter.class);
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
         return http.build();
