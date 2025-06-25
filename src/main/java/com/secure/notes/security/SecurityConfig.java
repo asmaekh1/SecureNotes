@@ -55,12 +55,15 @@ public class SecurityConfig {
                 // This configuration is useful for endpoints that do not require CSRF protection, such as public authentication or registration endpoints, where the client is not yet authenticated.
 
         );
-        //http.csrf(AbstractHttpConfigurer::disable);
+
+        http.cors(withDefaults());        //http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests((requests)
                 -> requests
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/csrf-token").permitAll()
                 .requestMatchers("/api/auth/public/**").permitAll()
+                .requestMatchers("/api/notes/**").authenticated()
+                .requestMatchers("/api/user").authenticated()
                 .anyRequest().authenticated());
 
         http.exceptionHandling(exception

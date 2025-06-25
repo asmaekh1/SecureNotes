@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true") // This annotation allows cross-origin requests from any origin
 @RestController // This annotation indicates that this class is a REST controller
 @RequestMapping("/api/auth") // This annotation specifies the base URL for all endpoints in this controller
 public class AuthController {
