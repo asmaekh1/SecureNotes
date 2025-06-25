@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @RestController // This annotation indicates that this class is a REST controller
 @RequestMapping("/api/auth") // This annotation specifies the base URL for all endpoints in this controller
 public class AuthController {
@@ -40,7 +41,8 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    AuthenticationManager authenticationManager;
+
     @Autowired
     UserRepository userRepository;
 
@@ -55,6 +57,7 @@ public class AuthController {
 
     // AuthController.java
     @PostMapping("/public/signin") // This annotation maps HTTP POST requests to the /signin endpoint
+
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
         try {
@@ -68,6 +71,8 @@ public class AuthController {
         }
 
 //      set the authentication
+
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -81,7 +86,9 @@ public class AuthController {
                 .collect(Collectors.toList());
 
         // Prepare the response body, now including the JWT token directly in the body
+
         LoginResponse response = new LoginResponse(userDetails.getUsername(), roles, jwtToken);
+
 
         // Return the response entity with the JWT token included in the response body
         return ResponseEntity.ok(response);
@@ -162,12 +169,16 @@ public class AuthController {
         return ResponseEntity.ok().body(response);
     }
 
- @GetMapping("/username")
+
+
+
+
+    // AuthController.java
+    @GetMapping("/username")
     public String currentUserName(@AuthenticationPrincipal UserDetails userDetails) {
         return (userDetails != null) ? userDetails.getUsername() : "";
     }
+
+
+
 }
-
-
-
-

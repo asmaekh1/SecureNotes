@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,21 +34,26 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf ->
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers("/api/auth/public/**")
+
                 // This configuration is useful for endpoints that do not require CSRF protection, such as public authentication or registration endpoints, where the client is not yet authenticated.
+
         );
         //http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests((requests)
@@ -58,11 +62,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/csrf-token").permitAll()
                 .requestMatchers("/api/auth/public/**").permitAll()
                 .anyRequest().authenticated());
-        http.exceptionHandling(exceptionHandling ->
-                exceptionHandling.authenticationEntryPoint(unauthorizedHandler));
-        http.addFilterBefore(
-                authenticationJwtTokenFilter()
-                , UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(exception
+                -> exception.authenticationEntryPoint(unauthorizedHandler));
+        http.addFilterBefore(authenticationJwtTokenFilter(),
+                UsernamePasswordAuthenticationFilter.class);
+
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
         return http.build();
@@ -73,6 +78,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+
     @Bean
     public CommandLineRunner initData(RoleRepository roleRepository,
                                       UserRepository userRepository,
@@ -80,6 +87,7 @@ public class SecurityConfig {
         return args -> {
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
                     .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_USER)));
+
 
             Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
                     .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_ADMIN)));

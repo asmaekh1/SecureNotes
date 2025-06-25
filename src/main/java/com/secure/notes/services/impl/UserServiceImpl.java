@@ -66,11 +66,11 @@ public class UserServiceImpl implements UserService {
                 user.getUpdatedDate()
         );
     }
+
     @Override
     public User findByUsername(String username) {
         Optional<User> user = userRepository.findByUserName(username);
         return user.orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
-
 
 }
